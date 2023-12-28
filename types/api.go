@@ -1,4 +1,4 @@
-package api
+package types
 
 type BaseActionMessage struct {
 	NaturalID  string `json:"natural_id"`

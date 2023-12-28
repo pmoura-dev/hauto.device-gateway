@@ -1,23 +1,26 @@
-package handlers
+package actions
 
 import (
 	"encoding/json"
 
 	"github.com/pmoura-dev/gobroker"
-	"github.com/pmoura-dev/hauto.device-gateway/api"
 	"github.com/pmoura-dev/hauto.device-gateway/controllers"
+	"github.com/pmoura-dev/hauto.device-gateway/types"
 )
 
 func SetRGBColor(ctx gobroker.ConsumerContext, message gobroker.Message) error {
-	var action api.SetRGBColorMessage
+	var action types.SetRGBColorMessage
 	err := json.Unmarshal(message.GetBody(), &action)
 	if err != nil {
 		return err
 	}
 
 	controller := ctx.Params[controllers.ControllerKey]
-	switchableController := controller.(controllers.RGBColored)
+	rgbColoredController := controller.(controllers.RGBColored)
 
 	color := action.Color
-	return switchableController.SetRGBColor(color.Red, color.Green, color.Blue)
+	data := rgbColoredController.SetRGBColor(color.Red, color.Green, color.Blue)
+	return ctx.Publisher.Publish([]byte(data.Payload), data.Topic, map[string]any{
+		"exchange": "amq.topic",
+	})
 }

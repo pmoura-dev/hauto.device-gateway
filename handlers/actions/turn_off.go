@@ -1,4 +1,4 @@
-package handlers
+package actions
 
 import (
 	"github.com/pmoura-dev/gobroker"
@@ -9,5 +9,8 @@ func TurnOff(ctx gobroker.ConsumerContext, _ gobroker.Message) error {
 	controller := ctx.Params[controllers.ControllerKey]
 	switchableController := controller.(controllers.Switchable)
 
-	return switchableController.TurnOff()
+	data := switchableController.TurnOff()
+	return ctx.Publisher.Publish([]byte(data.Payload), data.Topic, map[string]any{
+		"exchange": "amq.topic",
+	})
 }
