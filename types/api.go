@@ -1,8 +1,7 @@
 package types
 
 type BaseActionMessage struct {
-	NaturalID  string `json:"natural_id"`
-	Controller string `json:"controller"`
+	DeviceID int `json:"device_id"`
 }
 
 type SetRGBColorMessage struct {

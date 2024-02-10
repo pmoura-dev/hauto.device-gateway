@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 
 	"github.com/pmoura-dev/gobroker"
+	"github.com/pmoura-dev/hauto.device-gateway/configuration"
 	"github.com/pmoura-dev/hauto.device-gateway/controllers/shelly_bulb"
 	"github.com/pmoura-dev/hauto.device-gateway/types"
 )
@@ -11,27 +12,48 @@ import (
 const ControllerKey = "controller"
 
 type Switchable interface {
-	TurnOn() types.MQTTData
-	TurnOff() types.MQTTData
+	TurnOn() (types.MQTTData, error)
+	TurnOff() (types.MQTTData, error)
 }
 
 type RGBColored interface {
-	SetRGBColor(red, green, blue int) types.MQTTData
+	SetRGBColor(red, green, blue int) (types.MQTTData, error)
 }
+
+type StateListener interface {
+	HandleState(rawState []byte) ([]byte, error)
+}
+
+type PowerListener interface{}
+
+type EnergyListener interface{}
 
 func GetController(next gobroker.ConsumerHandlerFunc) gobroker.ConsumerHandlerFunc {
 	return func(ctx gobroker.ConsumerContext, message gobroker.Message) error {
-		var action types.BaseActionMessage
+		var deviceID int
 
-		body := message.GetBody()
-		err := json.Unmarshal(body, &action)
-		if err != nil {
-			return err
+		if ctx.Params["consumer_type"] == "action" {
+			var action types.BaseActionMessage
+
+			body := message.GetBody()
+			err := json.Unmarshal(body, &action)
+			if err != nil {
+				return err
+			}
+
+			deviceID = action.DeviceID
+		} else {
+			deviceID = ctx.Params["device_id"].(int)
 		}
 
-		switch action.Controller {
+		mqttConfigurations, _ := configuration.GetDeviceMQTTConfigurations()
+		controller := mqttConfigurations[deviceID].Controller
+		actions := mqttConfigurations[deviceID].Actions
+		listeners := mqttConfigurations[deviceID].Listeners
+
+		switch controller {
 		case "shelly_bulb":
-			ctx.Params[ControllerKey] = shelly_bulb.ShellyBulbController{NaturalID: action.NaturalID}
+			ctx.Params[ControllerKey] = shelly_bulb.NewShellyBulbController(actions, listeners)
 		case "hisense_ac":
 			panic("not implemented")
 		}

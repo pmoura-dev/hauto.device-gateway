@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	powerResponseTopicFormat = "status.%s"
+	powerResponseTopicFormat = "power.%s"
 	powerResponseExchange    = "devices"
 )
 

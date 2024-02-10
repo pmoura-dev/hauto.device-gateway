@@ -7,6 +7,7 @@ import (
 	"github.com/pmoura-dev/gobroker"
 	"github.com/pmoura-dev/gobroker/brokers"
 	"github.com/pmoura-dev/gobroker/middleware"
+	"github.com/pmoura-dev/hauto.device-gateway/clients/transaction_service"
 	"github.com/pmoura-dev/hauto.device-gateway/configuration"
 	"github.com/pmoura-dev/hauto.device-gateway/controllers"
 	"github.com/pmoura-dev/hauto.device-gateway/handlers/actions"
@@ -23,7 +24,10 @@ const (
 )
 
 func main() {
-	listenersConfig, err := configuration.LoadDeviceListeners()
+
+	transaction_service.Setup("http://localhost:8080")
+
+	mqttConfigurations, err := configuration.GetDeviceMQTTConfigurations()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -39,31 +43,44 @@ func main() {
 	server.Use(middleware.Logging)
 	server.Use(controllers.GetController)
 
-	server.AddConsumer(turnOnActionQueue, actions.TurnOn)
-	server.AddConsumer(turnOffActionQueue, actions.TurnOff)
-	server.AddConsumer(setRGBColorActionQueue, actions.SetRGBColor)
+	addActionConsumer(server, turnOnActionQueue, actions.TurnOn)
+	addActionConsumer(server, turnOffActionQueue, actions.TurnOff)
+	addActionConsumer(server, setRGBColorActionQueue, actions.SetRGBColor)
 
 	// listeners
-	for _, l := range listenersConfig.Devices {
-		for _, t := range l.Topics {
-			switch t.Type {
-			case "status":
-				queue := fmt.Sprintf("status.%s.device-gateway.queue", l.NaturalID)
-				broker.AddQueue(queue).Bind(defaultTopicExchange, t.Name)
-				server.AddConsumer(queue, listeners.Status).AddParam("natural_id", l.NaturalID)
+	for deviceID, deviceConfig := range mqttConfigurations {
+
+		for property, topic := range deviceConfig.Listeners {
+			switch property {
+			case "state":
+				queue := fmt.Sprintf("state.%d.device-gateway.queue", deviceID)
+				broker.AddQueue(queue).Bind(defaultTopicExchange, topic)
+				addListenerConsumer(server, queue, listeners.State).
+					AddParam("device_id", deviceID)
 			case "power":
-				queue := fmt.Sprintf("power.%s.device-gateway.queue", l.NaturalID)
-				broker.AddQueue(queue).Bind(defaultTopicExchange, t.Name)
-				server.AddConsumer(queue, listeners.Power).AddParam("natural_id", l.NaturalID)
+				queue := fmt.Sprintf("power.%d.device-gateway.queue", deviceID)
+				broker.AddQueue(queue).Bind(defaultTopicExchange, topic)
+				addListenerConsumer(server, queue, listeners.Power).
+					AddParam("device_id", deviceID)
 			case "energy":
-				queue := fmt.Sprintf("energy.%s.device-gateway.queue", l.NaturalID)
-				broker.AddQueue(queue).Bind(defaultTopicExchange, t.Name)
-				server.AddConsumer(queue, listeners.Energy).AddParam("natural_id", l.NaturalID)
+				queue := fmt.Sprintf("energy.%d.device-gateway.queue", deviceID)
+				broker.AddQueue(queue).Bind(defaultTopicExchange, topic)
+				addListenerConsumer(server, queue, listeners.Energy).
+					AddParam("device_id", deviceID)
 			}
 		}
 	}
 
+	fmt.Println("Service is running")
 	if err := server.Run("amqp://guest:guest@localhost:5672"); err != nil {
 		log.Fatal(err)
 	}
+}
+
+func addActionConsumer(server *gobroker.Server, queue string, handler gobroker.ConsumerHandlerFunc) *gobroker.Consumer {
+	return server.AddConsumer(queue, handler).AddParam("consumer_type", "action")
+}
+
+func addListenerConsumer(server *gobroker.Server, queue string, handler gobroker.ConsumerHandlerFunc) *gobroker.Consumer {
+	return server.AddConsumer(queue, handler).AddParam("consumer_type", "listener")
 }

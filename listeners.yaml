@@ -1,5 +1,6 @@
 devices:
   - id: "shellycolorbulb-3494546B2CAD"
+    controller: "shelly_bulb"
     topics:
     - type: status
       name: "shellies.shellycolorbulb-3494546B2CAD.color.0.status"

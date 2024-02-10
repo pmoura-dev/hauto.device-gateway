@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	energyResponseTopicFormat = "status.%s"
+	energyResponseTopicFormat = "energy.%s"
 	energyResponseExchange    = "devices"
 )
 

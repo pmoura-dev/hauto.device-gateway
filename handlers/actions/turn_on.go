@@ -6,10 +6,13 @@ import (
 )
 
 func TurnOn(ctx gobroker.ConsumerContext, _ gobroker.Message) error {
-	controller := ctx.Params[controllers.ControllerKey]
-	switchableController := controller.(controllers.Switchable)
+	controller := ctx.Params[controllers.ControllerKey].(controllers.Switchable)
 
-	data := switchableController.TurnOn()
+	data, err := controller.TurnOn()
+	if err != nil {
+		return err
+	}
+
 	return ctx.Publisher.Publish([]byte(data.Payload), data.Topic, map[string]any{
 		"exchange": "amq.topic",
 	})

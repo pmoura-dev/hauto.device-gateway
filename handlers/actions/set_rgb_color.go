@@ -15,11 +15,14 @@ func SetRGBColor(ctx gobroker.ConsumerContext, message gobroker.Message) error {
 		return err
 	}
 
-	controller := ctx.Params[controllers.ControllerKey]
-	rgbColoredController := controller.(controllers.RGBColored)
+	controller := ctx.Params[controllers.ControllerKey].(controllers.RGBColored)
 
 	color := action.Color
-	data := rgbColoredController.SetRGBColor(color.Red, color.Green, color.Blue)
+	data, err := controller.SetRGBColor(color.Red, color.Green, color.Blue)
+	if err != nil {
+		return err
+	}
+
 	return ctx.Publisher.Publish([]byte(data.Payload), data.Topic, map[string]any{
 		"exchange": "amq.topic",
 	})
