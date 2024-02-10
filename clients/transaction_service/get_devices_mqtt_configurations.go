@@ -4,12 +4,15 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"strconv"
 
 	"github.com/pmoura-dev/hauto.device-gateway/types"
 )
 
+type deviceMQTTConfigurations map[string]types.DeviceMQTTConfiguration
+
 func GetDevicesMQTTConfigurations() (types.DeviceMQTTConfigurations, error) {
-	path := "/get_devices_listeners_with_controllers"
+	path := "/devices/mqtt_configuration"
 
 	response, err := http.Get(baseURL + path)
 	if err != nil {
@@ -21,10 +24,19 @@ func GetDevicesMQTTConfigurations() (types.DeviceMQTTConfigurations, error) {
 		return nil, err
 	}
 
-	var configurations types.DeviceMQTTConfigurations
-	err = json.Unmarshal(body, &configurations)
+	var tempConfigurations deviceMQTTConfigurations
+	err = json.Unmarshal(body, &tempConfigurations)
 	if err != nil {
 		return nil, err
+	}
+
+	configurations := make(types.DeviceMQTTConfigurations)
+	for k, v := range tempConfigurations {
+		deviceID, err := strconv.Atoi(k)
+		if err != nil {
+			return nil, err
+		}
+		configurations[deviceID] = v
 	}
 
 	return configurations, nil

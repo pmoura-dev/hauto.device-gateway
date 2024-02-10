@@ -5,6 +5,7 @@ import (
 	"github.com/pmoura-dev/hauto.device-gateway/types"
 )
 
+/*
 var deviceMQTTConfigurations types.DeviceMQTTConfigurations = map[int]types.DeviceMQTTConfiguration{
 	1: {
 		Controller: "shelly_bulb",
@@ -17,7 +18,9 @@ var deviceMQTTConfigurations types.DeviceMQTTConfigurations = map[int]types.Devi
 			types.StateProperty: "shellies.shellycolorbulb-3494546B2CAD.color.0.status",
 		},
 	},
-}
+}*/
+
+var deviceMQTTConfigurations types.DeviceMQTTConfigurations
 
 func GetDeviceMQTTConfigurations() (types.DeviceMQTTConfigurations, error) {
 	if deviceMQTTConfigurations == nil {
