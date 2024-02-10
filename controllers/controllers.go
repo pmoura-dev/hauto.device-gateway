@@ -5,6 +5,7 @@ import (
 
 	"github.com/pmoura-dev/gobroker"
 	"github.com/pmoura-dev/hauto.device-gateway/configuration"
+	"github.com/pmoura-dev/hauto.device-gateway/controllers/hisense_ac"
 	"github.com/pmoura-dev/hauto.device-gateway/controllers/shelly_bulb"
 	"github.com/pmoura-dev/hauto.device-gateway/types"
 )
@@ -55,6 +56,8 @@ func GetController(next gobroker.ConsumerHandlerFunc) gobroker.ConsumerHandlerFu
 		case "shelly_bulb":
 			ctx.Params[ControllerKey] = shelly_bulb.NewShellyBulbController(actions, listeners)
 		case "hisense_ac":
+			ctx.Params[ControllerKey] = hisense_ac.NewHisenseACController(actions, listeners)
+		default:
 			panic("not implemented")
 		}
 
