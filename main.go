@@ -21,6 +21,10 @@ const (
 	turnOnActionQueue      = "turn_on.action.device-gateway.queue"
 	turnOffActionQueue     = "turn_off.action.device-gateway.queue"
 	setRGBColorActionQueue = "set_rgb_color.action.device-gateway.queue"
+
+	setHeatingThresholdTemperatureActionQueue = "set_heating_threshold_temperature.action.device-gateway.queue"
+	setCoolingThresholdTemperatureActionQueue = "set_cooling_threshold_temperature.action.device-gateway.queue"
+	setHeaterCoolerModeActionQueue            = "set_heater_cooler_mode.action.device-gateway.queue"
 )
 
 func main() {
@@ -37,6 +41,12 @@ func main() {
 	broker.AddQueue(turnOnActionQueue).Bind(devicesExchange, "turn_on.action")
 	broker.AddQueue(turnOffActionQueue).Bind(devicesExchange, "turn_off.action")
 	broker.AddQueue(setRGBColorActionQueue).Bind(devicesExchange, "set_rgb_color.action")
+	broker.AddQueue(setHeatingThresholdTemperatureActionQueue).
+		Bind(devicesExchange, "set_heating_threshold_temperature.action")
+	broker.AddQueue(setCoolingThresholdTemperatureActionQueue).
+		Bind(devicesExchange, "set_cooling_threshold_temperature.action")
+	broker.AddQueue(setHeaterCoolerModeActionQueue).
+		Bind(devicesExchange, "set_heater_cooler_mode.action")
 
 	server := gobroker.NewServer(broker)
 
@@ -46,6 +56,9 @@ func main() {
 	addActionConsumer(server, turnOnActionQueue, actions.TurnOn)
 	addActionConsumer(server, turnOffActionQueue, actions.TurnOff)
 	addActionConsumer(server, setRGBColorActionQueue, actions.SetRGBColor)
+	addActionConsumer(server, setHeatingThresholdTemperatureActionQueue, actions.SetHeatingThresholdTemperature)
+	addActionConsumer(server, setCoolingThresholdTemperatureActionQueue, actions.SetCoolingThresholdTemperature)
+	addActionConsumer(server, setHeaterCoolerModeActionQueue, actions.SetHeaterCoolerMode)
 
 	// listeners
 	for deviceID, deviceConfig := range mqttConfigurations {

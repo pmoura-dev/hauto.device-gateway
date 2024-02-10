@@ -21,6 +21,22 @@ type RGBColored interface {
 	SetRGBColor(red, green, blue int) (types.MQTTData, error)
 }
 
+type HeaterCooler interface {
+	Heater
+	Cooler
+	SetHeaterCoolerMode(mode string) (types.MQTTData, error)
+}
+
+type Heater interface {
+	SetHeatingThresholdTemperature(value int) (types.MQTTData, error)
+}
+
+type Cooler interface {
+	SetCoolingThresholdTemperature(value int) (types.MQTTData, error)
+}
+
+// listeners
+
 type StateListener interface {
 	HandleState(rawState []byte) ([]byte, error)
 }

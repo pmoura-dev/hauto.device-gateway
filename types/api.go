@@ -12,3 +12,13 @@ type SetRGBColorMessage struct {
 		Blue  int
 	}
 }
+
+type SetTemperatureThresholdMessage struct {
+	BaseActionMessage
+	Value int `json:"value"`
+}
+
+type SetHeaterCoolerModeMessage struct {
+	BaseActionMessage
+	Mode string `json:"mode"`
+}
