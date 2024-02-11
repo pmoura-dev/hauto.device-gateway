@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 
 	"github.com/pmoura-dev/gobroker"
-	"github.com/pmoura-dev/hauto.device-gateway/configuration"
 	"github.com/pmoura-dev/hauto.device-gateway/controllers/hisense_ac"
 	"github.com/pmoura-dev/hauto.device-gateway/controllers/shelly_bulb"
+	"github.com/pmoura-dev/hauto.device-gateway/mqtt_configuration"
 	"github.com/pmoura-dev/hauto.device-gateway/types"
 )
 
@@ -63,7 +63,7 @@ func GetController(next gobroker.ConsumerHandlerFunc) gobroker.ConsumerHandlerFu
 			deviceID = ctx.Params["device_id"].(int)
 		}
 
-		mqttConfigurations, _ := configuration.GetDeviceMQTTConfigurations()
+		mqttConfigurations, _ := mqtt_configuration.GetDeviceMQTTConfigurations()
 		controller := mqttConfigurations[deviceID].Controller
 		actions := mqttConfigurations[deviceID].Actions
 		listeners := mqttConfigurations[deviceID].Listeners

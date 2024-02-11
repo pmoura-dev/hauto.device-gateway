@@ -8,10 +8,11 @@ import (
 	"github.com/pmoura-dev/gobroker/brokers"
 	"github.com/pmoura-dev/gobroker/middleware"
 	"github.com/pmoura-dev/hauto.device-gateway/clients/transaction_service"
-	"github.com/pmoura-dev/hauto.device-gateway/configuration"
+	"github.com/pmoura-dev/hauto.device-gateway/config"
 	"github.com/pmoura-dev/hauto.device-gateway/controllers"
 	"github.com/pmoura-dev/hauto.device-gateway/handlers/actions"
 	"github.com/pmoura-dev/hauto.device-gateway/handlers/listeners"
+	"github.com/pmoura-dev/hauto.device-gateway/mqtt_configuration"
 )
 
 const (
@@ -29,9 +30,15 @@ const (
 
 func main() {
 
-	transaction_service.Setup("http://localhost:8080")
+	transactionServiceConfig := config.GetTransactionServiceConfig()
+	transaction_service.Setup(
+		fmt.Sprintf("http://%s:%s",
+			transactionServiceConfig.Host,
+			transactionServiceConfig.Port,
+		),
+	)
 
-	mqttConfigurations, err := configuration.GetDeviceMQTTConfigurations()
+	mqttConfigurations, err := mqtt_configuration.GetDeviceMQTTConfigurations()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -84,8 +91,15 @@ func main() {
 		}
 	}
 
-	fmt.Println("Service is running")
-	if err := server.Run("amqp://guest:guest@localhost:5672"); err != nil {
+	rabbitMQConfig := config.GetRabbitMQConfig()
+	if err := server.Run(
+		fmt.Sprintf("amqp://%s:%s@%s:%s",
+			rabbitMQConfig.User,
+			rabbitMQConfig.Password,
+			rabbitMQConfig.Host,
+			rabbitMQConfig.Port,
+		),
+	); err != nil {
 		log.Fatal(err)
 	}
 }

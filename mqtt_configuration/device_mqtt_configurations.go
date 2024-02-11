@@ -1,4 +1,4 @@
-package configuration
+package mqtt_configuration
 
 import (
 	"github.com/pmoura-dev/hauto.device-gateway/clients/transaction_service"
