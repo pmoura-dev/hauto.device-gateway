@@ -18,7 +18,7 @@ type TransactionServiceConfig struct {
 
 func GetTransactionServiceConfig() TransactionServiceConfig {
 	return TransactionServiceConfig{
-		Host: getEnv("TRANSACTION_SERVICE_HOST", "192.168.1.102"),
+		Host: getEnv("TRANSACTION_SERVICE_HOST", "localhost"),
 		Port: getEnv("TRANSACTION_SERVICE_PORT", "8080"),
 	}
 }
@@ -32,7 +32,7 @@ type RabbitMQConfig struct {
 
 func GetRabbitMQConfig() RabbitMQConfig {
 	return RabbitMQConfig{
-		Host:     getEnv("RABBITMQ_HOST", "192.168.1.102"),
+		Host:     getEnv("RABBITMQ_HOST", "localhost"),
 		Port:     getEnv("RABBITMQ_PORT", "5672"),
 		User:     getEnv("RABBITMQ_USER", "guest"),
 		Password: getEnv("RABBITMQ_PASSWORD", "guest"),
