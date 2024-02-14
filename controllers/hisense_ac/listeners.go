@@ -30,7 +30,7 @@ func (c HisenseACController) HandleState(rawState []byte) ([]byte, error) {
 	convertedState := types.AirConditionerState{
 		Status:                             status,
 		Mode:                               mode,
-		CurrentTemperature:                 state.FTempIn,
+		CurrentTemperature:                 int(state.FTempIn),
 		CurrentHeatingThresholdTemperature: state.TTemp,
 		CurrentCoolingThresholdTemperature: state.TTemp,
 	}
@@ -39,8 +39,8 @@ func (c HisenseACController) HandleState(rawState []byte) ([]byte, error) {
 }
 
 type hisenseACState struct {
-	FTempIn   int    `json:"f_temp_in"`
-	TPower    string `json:"t_power"`
-	TWorkMode string `json:"t_work_mode"`
-	TTemp     int    `json:"t_temp"`
+	FTempIn   float64 `json:"f_temp_in"`
+	TPower    string  `json:"t_power"`
+	TWorkMode string  `json:"t_work_mode"`
+	TTemp     int     `json:"t_temp"`
 }
