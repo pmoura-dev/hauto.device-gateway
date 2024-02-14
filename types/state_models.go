@@ -13,3 +13,11 @@ type LightBulbState struct {
 	Brightness  int             `json:"brightness"`
 	Temperature int             `json:"temperature"`
 }
+
+type AirConditionerState struct {
+	Status                             string `json:"status"`
+	Mode                               string `json:"mode"`
+	CurrentTemperature                 int    `json:"current_temperature"`
+	CurrentHeatingThresholdTemperature int    `json:"current_heating_threshold_temperature"`
+	CurrentCoolingThresholdTemperature int    `json:"current_cooling_threshold_temperature"`
+}
