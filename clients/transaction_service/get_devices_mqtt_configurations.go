@@ -14,7 +14,7 @@ type deviceMQTTConfigurations map[string]types.DeviceMQTTConfiguration
 func GetDevicesMQTTConfigurations() (types.DeviceMQTTConfigurations, error) {
 	path := "/execute/get_devices_mqtt_configuration"
 
-	response, err := http.Get(baseURL + path)
+	response, err := http.Post(baseURL+path, "", nil)
 	if err != nil {
 		return nil, err
 	}
