@@ -12,7 +12,7 @@ import (
 type deviceMQTTConfigurations map[string]types.DeviceMQTTConfiguration
 
 func GetDevicesMQTTConfigurations() (types.DeviceMQTTConfigurations, error) {
-	path := "/devices/mqtt_configuration"
+	path := "/execute/get_devices_mqtt_configuration"
 
 	response, err := http.Get(baseURL + path)
 	if err != nil {
