@@ -11,6 +11,11 @@ const (
 	AirConditionerCoolingMode   = "cooling"
 )
 
+const (
+	ColorLightColorMode = "color"
+	ColorLightWhiteMode = "white"
+)
+
 type HSLAColor struct {
 	Hue        int      `json:"hue"`
 	Saturation int      `json:"saturation"`

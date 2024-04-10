@@ -41,15 +41,25 @@ func (c ShellyColorBulbController) HandleState(rawState []byte, _ string) (state
 		status = types.OnlineStatus
 	}
 
-	h, s, l := colorconv.RGBToHSL(parsedState.Red, parsedState.Green, parsedState.Blue)
+	mode := types.ColorLightColorMode
+	if parsedState.Mode == "white" {
+		mode = types.ColorLightWhiteMode
+	}
 
+	brightness := parsedState.Brightness
+	temperature := parsedState.Temp
+
+	h, s, l := colorconv.RGBToHSL(parsedState.Red, parsedState.Green, parsedState.Blue)
 	return &states.ColorLightState{
 		Status: status,
+		Mode:   mode,
 		Color: types.HSLAColor{
 			Hue:        int(h),
 			Saturation: int(s * 100),
 			Lightness:  int(l * 100),
 		},
+		Brightness:  brightness,
+		Temperature: temperature,
 	}, nil
 }
 

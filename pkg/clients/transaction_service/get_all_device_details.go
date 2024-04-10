@@ -7,12 +7,21 @@ import (
 	"github.com/pmoura-dev/hauto.device-gateway/pkg/states"
 )
 
-func GetDevicesWithState() ([]DeviceWithState, error) {
+const (
+	getAllDeviceDetailsProcName = "get_all_device_details"
+)
+
+func GetAllDeviceDetails() ([]DeviceDetails, error) {
 
 	// TODO: make call to transaction service
 	body := stubs.DevicesData
 
-	var response []DeviceWithState
+	body, err := execute(getAllDeviceDetailsProcName, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var response []DeviceDetails
 	if err := json.Unmarshal(body, &response); err != nil {
 		return nil, err
 	}
@@ -25,15 +34,15 @@ var stateTypeMap = map[string]func() states.State{
 	"air_conditioner": func() states.State { return &states.AirConditionerState{} },
 }
 
-type DeviceWithState struct {
-	ID         int    `json:"id"`
-	NaturalID  string `json:"natural_id"`
-	Type       string `json:"type"`
-	Controller string `json:"controller"`
-	State      states.State
+type DeviceDetails struct {
+	ID         int          `json:"id"`
+	NaturalID  string       `json:"natural_id"`
+	Type       string       `json:"type"`
+	Controller string       `json:"controller"`
+	State      states.State `json:"state"`
 }
 
-func (d *DeviceWithState) UnmarshalJSON(data []byte) error {
+func (d *DeviceDetails) UnmarshalJSON(data []byte) error {
 	var device struct {
 		ID         int    `json:"id"`
 		NaturalID  string `json:"natural_id"`
@@ -65,8 +74,10 @@ func (d *DeviceWithState) UnmarshalJSON(data []byte) error {
 	}
 
 	state := stateFn()
-	if err := json.Unmarshal(rawState.State, state); err != nil {
-		return err
+	if rawState.State != nil {
+		if err := json.Unmarshal(rawState.State, state); err != nil {
+			return err
+		}
 	}
 
 	d.State = state

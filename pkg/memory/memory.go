@@ -38,7 +38,7 @@ func GetDeviceManagerInstance() (*DeviceManager, error) {
 }
 
 func newDeviceManager() (*DeviceManager, error) {
-	devicesWithState, err := transaction_service.GetDevicesWithState()
+	devicesWithState, err := transaction_service.GetAllDeviceDetails()
 	if err != nil {
 		return nil, err
 	}

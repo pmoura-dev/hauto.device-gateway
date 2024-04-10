@@ -28,7 +28,7 @@ func execute(procName string, params map[string]any) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+	_ = response.Body.Close()
 
 	return body, nil
-
 }
