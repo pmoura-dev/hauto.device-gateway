@@ -10,26 +10,26 @@ import (
 )
 
 const (
-	ShellyColorBulbControllerName = "shelly_color_bulb"
+	ShellyBulbRGBWControllerName = "SHELLY_BULB_RGBW"
 )
 
-type ShellyColorBulbController struct {
+type ShellyBulbRGBWController struct {
 	BaseController
 }
 
-func NewShellyColorBulbController(naturalID string) ShellyColorBulbController {
-	return ShellyColorBulbController{
+func NewShellyColorBulbController(naturalID string) ShellyBulbRGBWController {
+	return ShellyBulbRGBWController{
 		BaseController{naturalID: naturalID},
 	}
 }
 
-func (c ShellyColorBulbController) GetStateTopic() string {
+func (c ShellyBulbRGBWController) GetStateTopic() string {
 	const topicFormat = "shellies.%s.color.0.status"
 
 	return fmt.Sprintf(topicFormat, c.naturalID)
 }
 
-func (c ShellyColorBulbController) HandleState(rawState []byte, _ string) (states.State, error) {
+func (c ShellyBulbRGBWController) HandleState(rawState []byte, _ string) (states.State, error) {
 	var parsedState shellyColorBulbRawState
 
 	if err := json.Unmarshal(rawState, &parsedState); err != nil {
@@ -80,7 +80,7 @@ type shellyColorBulbRawState struct {
 	Effect         int    `json:"effect"`
 }
 
-func (c ShellyColorBulbController) TurnOn() MQTTData {
+func (c ShellyBulbRGBWController) TurnOn() MQTTData {
 	const topicFormat = "shellies.%s.color.0.command"
 
 	return MQTTData{
@@ -89,7 +89,7 @@ func (c ShellyColorBulbController) TurnOn() MQTTData {
 	}
 }
 
-func (c ShellyColorBulbController) TurnOff() MQTTData {
+func (c ShellyBulbRGBWController) TurnOff() MQTTData {
 	const topicFormat = "shellies.%s.color.0.command"
 
 	return MQTTData{

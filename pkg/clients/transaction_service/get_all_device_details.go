@@ -3,18 +3,14 @@ package transaction_service
 import (
 	"encoding/json"
 
-	"github.com/pmoura-dev/hauto.device-gateway/data/stubs"
 	"github.com/pmoura-dev/hauto.device-gateway/pkg/states"
 )
 
 const (
-	getAllDeviceDetailsProcName = "get_all_device_details"
+	getAllDeviceDetailsProcName = "devices/get_all_device_details"
 )
 
 func GetAllDeviceDetails() ([]DeviceDetails, error) {
-
-	// TODO: make call to transaction service
-	body := stubs.DevicesData
 
 	body, err := execute(getAllDeviceDetailsProcName, nil)
 	if err != nil {

@@ -5,7 +5,7 @@ import (
 	"sync"
 
 	"github.com/pmoura-dev/hauto.device-gateway/pkg/clients/transaction_service"
-	controllers2 "github.com/pmoura-dev/hauto.device-gateway/pkg/controllers"
+	"github.com/pmoura-dev/hauto.device-gateway/pkg/controllers"
 	"github.com/pmoura-dev/hauto.device-gateway/pkg/states"
 )
 
@@ -15,7 +15,7 @@ var lock = &sync.Mutex{}
 
 type DeviceManager struct {
 	states      map[int]states.State
-	controllers map[int]controllers2.Controller
+	controllers map[int]controllers.Controller
 
 	lock *sync.Mutex
 }
@@ -44,7 +44,7 @@ func newDeviceManager() (*DeviceManager, error) {
 	}
 
 	statesMap := map[int]states.State{}
-	controllersMap := map[int]controllers2.Controller{}
+	controllersMap := map[int]controllers.Controller{}
 	for _, d := range devicesWithState {
 		statesMap[d.ID] = d.State
 		controllersMap[d.ID] = createController(d.Controller, d.NaturalID)
@@ -84,20 +84,20 @@ func (m *DeviceManager) UpdateState(deviceID int, newState states.State) (bool, 
 	return true, m.states[deviceID], nil
 }
 
-func (m *DeviceManager) GetControllers() map[int]controllers2.Controller {
+func (m *DeviceManager) GetControllers() map[int]controllers.Controller {
 	return m.controllers
 }
 
-func (m *DeviceManager) GetController(deviceID int) controllers2.Controller {
+func (m *DeviceManager) GetController(deviceID int) controllers.Controller {
 	return m.controllers[deviceID]
 }
 
-func createController(controller string, naturalID string) controllers2.Controller {
+func createController(controller string, naturalID string) controllers.Controller {
 	switch controller {
-	case controllers2.ShellyColorBulbControllerName:
-		return controllers2.NewShellyColorBulbController(naturalID)
-	case controllers2.HisenseACControllerName:
-		return controllers2.NewHisenseACController(naturalID)
+	case controllers.ShellyBulbRGBWControllerName:
+		return controllers.NewShellyColorBulbController(naturalID)
+	case controllers.HisenseACControllerName:
+		return controllers.NewHisenseACController(naturalID)
 	}
 
 	return nil

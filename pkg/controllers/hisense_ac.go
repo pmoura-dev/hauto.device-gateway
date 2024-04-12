@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	HisenseACControllerName = "hisense_ac"
+	HisenseACControllerName = "HISENSE_AC"
 )
 
 type HisenseACController struct {
